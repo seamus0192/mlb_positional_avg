@@ -19,6 +19,7 @@ for (category in sub.categories) {
 smoothScatter(dt2$AB, dt2$HR, main="Scatterplot Example", 
               xlab="H", ylab="AVG",nrpoints = Inf)
 
-barplot(A,names.arg = c("1B","3B","2B","C","CF","DH","LF","P","SS","RF"))
+#barplot(A,names.arg = c("1B","3B","2B","C","CF","DH","LF","P","SS","RF"))
+lines(lowess(dt2$AB,dt2$HR), col="blue")
 
 

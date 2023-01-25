@@ -1,0 +1,69 @@
+---
+title: "Hitting by Frequency and Position"
+author: "Seamus O'Malley"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+```{r cars}
+getwd()
+
+library(ggplot2)
+
+dt1<-read.csv("mlb_players_18.csv")
+dt2<-data.frame(dt1)
+
+#following code filters pitchers out of data
+no.pitch <- filter(dt2,dt2$position != "P")
+dt3 <- data.frame(no.pitch,d=.2)
+
+#following code block splits data by position
+sub.categories = split(dt2,dt2$position)
+A = numeric(10)
+i = 1
+for (category in sub.categories) {
+  pos.avg = mean(category$AVG)
+  A[i] = pos.avg
+  i = i + 1
+}
+```
+
+```{r scatter, echo = FALSE}
+
+smoothScatter(dt2$AB, dt2$AVG, main="Scatterplot of AB vs AVG", 
+              xlab="AB", ylab="AVG",nrpoints = Inf,colramp = colorRampPalette(c("white", "pink", "red"),space = "Lab"),bandwidth = c(1,.01))
+```
+
+## Scatter Plot Findings
+
+The scatter plot forms an interesting distrubution. This follows a general rule of probability, as the rand of averages slowly convenes around a certain point more and more as the amount of at bats increases. I believe this insight to be valuable in the way that knowing a players total plate appearances can allow me to truly tell how effective a player is. A player with a .500 AVG but less than 10 plate appearances is much less notable than a player with a .300 AVG and over 500 plate appearances.
+
+```{r bar, echo=FALSE}
+barplot(A,names.arg = c("1B","3B","2B","C","CF","DH","LF","P","SS","RF"))
+```
+
+## Bar Plot Findings
+
+The bar plot provides valuable insight into some of the results seen in the scatter plot. The darker red concentrated area around 0,0 seems to be a result of the data including pitchers in hitting stats. Pitchers in the major leagues generally do not hit at all, and when they do it is not great. It is also interesting to note that the DH position had the highest AVG, which makes sense as the people who play designated hitter literally only hit. In order to possibly get a better idea of pure hitter abilities, I decided to repeat the creation of the scatter plot but with the exclusion of the data for the pitchers.
+
+```{r scatter2, echo=FALSE}
+#smoothScatter(dt3$AB, dt3$AVG, main="Scatterplot Without Pitchers", 
+   #           xlab="AB", ylab="AVG",nrpoints = Inf,colramp = colorRampPalette(c("white", "pink", #"red"),space = "Lab"),bandwidth =1)
+```
+```{r hist, echo=FALSE}                                                                           
+
+hist(dt3$HR,xlab="AVG", main = "Histogram of Avgerages (no Pitchers)",breaks = c(.025*0:30))
+```
+
+
+## Final Conclusions
+
+This second scatter plot seems to be much more representative of how hitting numbers truly work. It reminds me almost of a convergence/limit problem, where the more at bats the less the distribution of averages is. Theoretically this pattern would continue on wards, and if there was a way to have even substantially more at bats in a season (or maybe looking at at bats spanning over multiple seasons) the averages would converge even more.
